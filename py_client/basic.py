@@ -6,11 +6,11 @@ import requests
 endpoint = 'http://localhost:8000/api/'
 
 
-get_response = requests.get(endpoint)  # HTTP Request
-# get_response = requests.get(endpoint, json={'query:"Hello world"'})  # HTTP Request
-print(get_response.text)  # Print raw text response
-print(get_response.status_code)
-print(get_response.json()['message'])
+# get_response = requests.get(endpoint)  # HTTP Request
+payload = {'abc': 123}
+get_response = requests.get(endpoint, params=payload, json={'query':'Hello world'})  # HTTP Request
+# print(get_response.text)  # Print raw text response
+# print(get_response.status_code)
 
 
 """
@@ -19,3 +19,4 @@ REST API HTTP Request => JSON
 JavaScript Object Notation ~ Python Dict
 """
 
+print(get_response.json())
