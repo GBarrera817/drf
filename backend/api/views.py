@@ -1,5 +1,6 @@
 import json
-from django.http import JsonResponse
+from django.forms.models import model_to_dict
+from django.http import JsonResponse, HttpResponse
 
 from products.models import Product
 
@@ -10,14 +11,11 @@ def api_home(request, *args, **kwargs):
 
     if model_data:
 
-        data['id'] = model_data.id
-        data['title'] = model_data.title
-        data['content'] = model_data.content
-        data['price'] = model_data.price
-        
-        # model instace (model_data)
-        # turn a Python dict
-        # return JSON to my client
+        data = model_to_dict(model_data, fields=['id', 'title'])
 
+        # print(data)
+        # json_data_str = json.dumps(data)
+
+    # return HttpResponse(json_data_str, headers={'Contenty-Type': 'application/json'})
     return JsonResponse(data)
 
