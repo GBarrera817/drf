@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from products.models import Product
+from products.serializers import ProductSerializer
 
 @api_view(['GET'])
 def api_home(request, *args, **kwargs):
@@ -12,15 +13,12 @@ def api_home(request, *args, **kwargs):
     DRF API View
     """
 
-    if request.method != 'POST':
-        return Response({'detail': 'GET not allowed'}, status=405)
-
-    model_data = Product.objects.all().order_by('?').first()
+    instance = Product.objects.all().order_by('?').first()
     data = {}
 
-    if model_data:
+    if instance:
 
-        data = model_to_dict(model_data, fields=['id', 'title'])
+        data = ProductSerializer(instance).data
 
     return Response(data)
 
