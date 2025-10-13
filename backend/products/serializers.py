@@ -21,4 +21,10 @@ class ProductSerializer(serializers.ModelSerializer):
 
         # obj is the current instance of the Class
         
-        return obj.get_discount() 
+        if not hasattr(obj, 'id'):
+            return None
+        
+        if not isinstance(obj, Product):
+            return None
+        
+        return obj.get_discount()
