@@ -1,4 +1,8 @@
 from rest_framework import generics
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+# from django.http import Http404
 
 from .models import Product
 from .serializers import ProductSerializer
@@ -52,3 +56,52 @@ class ProductListAPIView(generics.ListAPIView):
 
 
 product_list_view = ProductListAPIView.as_view()
+
+
+@api_view(['GET', 'POST'])
+def product_alt_view(request, pk=None, *args, **kwargs):
+    method = request.method
+
+    if method == 'GET':
+        # url_args??
+        # get request -> detail view
+        if pk is not None:
+            # detail view
+
+            """
+            This is the common way to get the specific item
+            """
+            # queryset = Product.objects.filter(pk=pk)
+            
+            # if not queryset.exists():
+            #     raise Http404
+
+            obj = get_object_or_404(Product, pk=pk)  # pk=pk is the lookup field_name = field_value
+            data = ProductSerializer(obj, many=False).data
+
+            return Response(data)
+        
+        # list view
+        queryset = Product.objects.all() # qs
+        data = ProductSerializer(queryset, many=True).data
+
+        return Response(data)
+
+    if method == 'POST':
+        # create an item
+
+        serializer = ProductSerializer(data=request.data)
+
+        if serializer.is_valid(raise_exception=True):
+            
+            title = serializer.validated_data.get('title')
+            content = serializer.validated_data.get('content') or None
+
+            if content is None:
+                content = title
+
+            serializer.save(content=content)
+
+            return Response(serializer.data)
+        
+        return Response({'invalid': 'not a good data'}, status=400)
