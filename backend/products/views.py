@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, mixins
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -81,16 +81,61 @@ class ProductDestroyAPIView(generics.DestroyAPIView):
 product_destroy_view = ProductDestroyAPIView.as_view()
 
 
-class ProductListAPIView(generics.ListAPIView):
+# class ProductListAPIView(generics.ListAPIView):
 
-    '''
-    Not gonna use this method
-    '''
+#     '''
+#     Not gonna use this method
+#     '''
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+
+
+# product_list_view = ProductListAPIView.as_view()
+
+
+class ProductMixinView(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    generics.GenericAPIView
+    ):
+
+    """ In a CBV we don't write a condition asking for 'get' or 'post' method,
+        We write a actual method on the class itself for the different request HTTP method
+    """
+
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    lookup_field = 'pk'  # default => for Retrieve
+
+    def get(self, request, *args, **kwargs):
+        print(args, kwargs)
+        pk = kwargs.get('pk')
+
+        if pk is not None:
+            return self.retrieve(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+    
+    def perform_create(self, serializer):
+        # serializer.save(user=self.request.user)
+        print(serializer.validated_data)
+
+        # Adding custom data
+        title = serializer.validated_data.get('title')
+        content = serializer.validated_data.get('content') or None
+
+        if content is None:
+            content = 'this is a single view doing cool stuff'
+
+        serializer.save(content=content)
+
+        # send a Django signal
 
 
-product_list_view = ProductListAPIView.as_view()
+product_mixin_view = ProductMixinView.as_view()
 
 
 @api_view(['GET', 'POST'])
@@ -140,3 +185,5 @@ def product_alt_view(request, pk=None, *args, **kwargs):
             return Response(serializer.data)
         
         return Response({'invalid': 'not a good data'}, status=400)
+
+
