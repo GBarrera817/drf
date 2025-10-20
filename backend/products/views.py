@@ -46,6 +46,41 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
 product_detail_view = ProductDetailAPIView.as_view()
 
 
+class ProductUpdateAPIView(generics.UpdateAPIView):
+
+    # in detail view we have 1 single item to retrieve
+
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = 'pk'
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+
+        if not instance.content: 
+            instance.content = instance.title
+
+
+product_update_view = ProductUpdateAPIView.as_view()
+
+
+class ProductDestroyAPIView(generics.DestroyAPIView):
+
+    # in detail view we have 1 single item to retrieve
+
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = 'pk'
+
+    def perform_destroy(self, instance):
+        
+        # instance
+        super().perform_destroy(instance)
+
+
+product_destroy_view = ProductDestroyAPIView.as_view()
+
+
 class ProductListAPIView(generics.ListAPIView):
 
     '''
@@ -93,7 +128,7 @@ def product_alt_view(request, pk=None, *args, **kwargs):
         serializer = ProductSerializer(data=request.data)
 
         if serializer.is_valid(raise_exception=True):
-            
+
             title = serializer.validated_data.get('title')
             content = serializer.validated_data.get('content') or None
 
