@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 # from django.http import Http404
 
+from api.authentication import TokenAuthentication
+
 from .models import Product
 from .permissions import IsStaffEditorPermission
 from .serializers import ProductSerializer
@@ -15,7 +17,11 @@ from .serializers import ProductSerializer
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    authentication_classes = [authentication.SessionAuthentication]
+    authentication_classes = [
+        authentication.SessionAuthentication,
+        # authentication.TokenAuthentication
+        TokenAuthentication  # override the original class TokenAuthentication
+    ]
     # permission_classes = [IsStaffEditorPermission]
 
     # the order of the permission matters
