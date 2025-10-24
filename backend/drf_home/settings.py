@@ -124,3 +124,20 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+auth_classes = [
+    'rest_framework.authentication.SessionAuthentication',
+    'api.authentication.TokenAuthentication'  # Custom Authentication
+],
+
+if DEBUG:
+    auth_classes = [
+        'api.authentication.TokenAuthentication'
+    ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': auth_classes,
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly'  # GET
+    ]
+}

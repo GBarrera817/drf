@@ -17,11 +17,13 @@ from .serializers import ProductSerializer
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    authentication_classes = [
-        authentication.SessionAuthentication,
-        # authentication.TokenAuthentication
-        TokenAuthentication  # override the original class TokenAuthentication
-    ]
+
+    # NOT NEEDED ANYMORE, BECAUSE I CUSTOMIZE IT IN SETTINGS.PY
+    # authentication_classes = [
+    #     authentication.SessionAuthentication,
+    #     # authentication.TokenAuthentication
+    #     TokenAuthentication  # override the original class TokenAuthentication
+    # ]
     # permission_classes = [IsStaffEditorPermission]
 
     # the order of the permission matters
@@ -52,6 +54,7 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
     # lookup_field = 'pk'
 
 
@@ -65,6 +68,7 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     def perform_update(self, serializer):
         instance = serializer.save()
@@ -83,6 +87,7 @@ class ProductDestroyAPIView(generics.DestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     def perform_destroy(self, instance):
         

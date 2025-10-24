@@ -10,7 +10,7 @@ from getpass import getpass
 
 auth_endpoint = 'http://localhost:8000/api/auth/'
 username = input("What's your username?\n")
-password = getpass("What's your password?\n") 
+password = getpass("What's your password?\n")
 
 auth_response = requests.post(auth_endpoint, json={'username': 'gaby', 'password': password})
 print(auth_response.json())
