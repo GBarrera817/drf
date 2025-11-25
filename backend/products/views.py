@@ -34,6 +34,10 @@ class ProductListCreateAPIView(
     # the order of the permission matters
     # permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
+    def get(self, request, *args, **kwargs):
+        print('user', request.user, 'is_authenticated', request.user.is_authenticated, 'auth', request.auth)
+        return super().get(request, *args, **kwargs)
+
     def perform_create(self, serializer):
         # serializer.save(user=self.request.user)
         print(serializer.validated_data)
@@ -91,7 +95,10 @@ class ProductUpdateAPIView(
 product_update_view = ProductUpdateAPIView.as_view()
 
 
-class ProductDestroyAPIView(generics.DestroyAPIView):
+class ProductDestroyAPIView(
+    StaffEditorPermissionMixin,
+    generics.DestroyAPIView
+):
 
     # in detail view we have 1 single item to retrieve
 
