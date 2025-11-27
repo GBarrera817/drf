@@ -42,6 +42,8 @@ class ProductListCreateAPIView(
         # serializer.save(user=self.request.user)
         print(serializer.validated_data)
 
+        email = serializer.validated_data.pop('email')
+        print(email)
         # Adding custom data
         title = serializer.validated_data.get('title')
         content = serializer.validated_data.get('content') or None
@@ -49,7 +51,7 @@ class ProductListCreateAPIView(
         if content is None:
             content = title
 
-        serializer.save(content=content)
+        serializer.save(content=content) # form.save() model.save()
 
         # send a Django signal
 
